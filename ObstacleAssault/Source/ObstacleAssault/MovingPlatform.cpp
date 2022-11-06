@@ -15,21 +15,41 @@ void AMovingPlatform::BeginPlay()
 	Super::BeginPlay();
 
 	StartLocation = GetActorLocation();
+
+	FString MyString = GetName();
+	UE_LOG(LogTemp, Warning, TEXT("Actor's Name: %s / Configured MoveDistance: %f"), *MyString, MoveDistance); // 문자열에는 *를 붙여야한다.
 }
 
 // Called every frame
 void AMovingPlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	FVector CurrentLocation = GetActorLocation();
-	CurrentLocation += PlatformVelocity * DeltaTime;
+	if (EnableMoveVector)
+		MovePlatform(DeltaTime);
+	if (EnableRotate)
+		RotatePlatform(DeltaTime);
+}
 
+void AMovingPlatform::MovePlatform(float DeltaTime)
+{
+	FVector CurrentLocation = GetActorLocation();
+	CurrentLocation += MoveVelocity * DeltaTime;
 	SetActorLocation(CurrentLocation);
 
-	DistanceMoved = FVector::Dist(StartLocation, CurrentLocation);
-	if (DistanceMoved >= 100)
+	if (GetDistanceMoved() >= MoveDistance)
 	{
-		StartLocation = CurrentLocation;
-		PlatformVelocity *= -1;
+		FVector MoveDirection = MoveVelocity.GetSafeNormal();
+		StartLocation += MoveDistance * MoveDirection;
+		MoveVelocity = -MoveVelocity;
 	}
+}
+
+void AMovingPlatform::RotatePlatform(float DeltaTime)
+{
+	AddActorLocalRotation(RotateVelocity * DeltaTime);
+}
+
+float AMovingPlatform::GetDistanceMoved() const
+{
+	return FVector::Dist(StartLocation, GetActorLocation());
 }

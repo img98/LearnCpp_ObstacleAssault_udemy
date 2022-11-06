@@ -23,11 +23,24 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+private:
+	void MovePlatform(float DeltaTime);
+	void RotatePlatform(float DeltaTime);
+	float GetDistanceMoved() const;
+
+	//클래스 속성, 그런데 여길건들면(ex.이름바꾸기 등) ue에디터에서 설정한 값이 사라지는데, 거긴 안건들고 수정할수 있는 방법 없나?
 	UPROPERTY(EditAnywhere, Category = "Moving Platform")
-	FVector PlatformVelocity = FVector(100, 0, 0);
+	FVector MoveVelocity = FVector(0, 0, 0);
+	UPROPERTY(EditAnywhere, Category = "Moving Platform")
+	float MoveDistance;
 
+	UPROPERTY(EditAnywhere, Category = "Moving Platform")
+	FRotator RotateVelocity;
+
+	UPROPERTY(EditAnywhere, Category = "Enable MovingFunc")
+	bool EnableMoveVector = false;
+	UPROPERTY(EditAnywhere, Category = "Enable MovingFunc")
+	bool EnableRotate = false;
+	
 	FVector StartLocation;
-
-	UPROPERTY(VisibleAnywhere, Category = "Moving Platform")
-	float DistanceMoved = -1;
 };
